@@ -7,8 +7,7 @@ export const SERVICE = {
             {
                 console.log('Datos recibidos para crear cliente:', args);
 
-                // Aquí iría tu lógica de negocio, como guardar el cliente en una base de datos
-                // Para este ejemplo, vamos a simular una respuesta de éxito
+                // TODO: Aquí se debe implementar la lógica de negocio
 
                 return {
                     success: true,
