@@ -3,16 +3,16 @@ import type { Router } from "express";
 import express from "express";
 
 import {
-         depositOnWallet,
+         addFunds,
+         confirmPayment,
          getBalance,
          payPurchase,
-         confirmPayment,
-       } from "./handler";
+       } from "./handlers";
 
 export const ROUTER: Router = express.Router();
 
 ROUTER.get("/balance", getBalance);
 
-ROUTER.post("/deposit"    , depositOnWallet);
+ROUTER.post("/addFunds"   , addFunds);
 ROUTER.post("/pay"        , payPurchase);
 ROUTER.post("/pay/confirm", confirmPayment);
