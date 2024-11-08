@@ -1,0 +1,1 @@
+export { ROUTER as CUSTOMER_ROUTER } from "./router";
