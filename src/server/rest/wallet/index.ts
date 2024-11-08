@@ -1,0 +1,1 @@
+export { ROUTER as WALLET_ROUTER } from "./router";

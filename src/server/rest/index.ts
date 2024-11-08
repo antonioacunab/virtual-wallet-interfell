@@ -2,13 +2,15 @@ import type { Express } from "express";
 
 import express from "express";
 
-import { CUSTOMERS_ROUTER } from "./routers/customer";
+import { CUSTOMER_ROUTER } from "./customer";
+import { WALLET_ROUTER   } from "./wallet";
 
 const app: Express = express();
 
 app.use(express.json());
 app.use(express.text());
 
-app.use("/customers", CUSTOMERS_ROUTER);
+app.use("/customers", CUSTOMER_ROUTER);
+app.use("/wallet"   , WALLET_ROUTER);
 
 app.listen("3000");
