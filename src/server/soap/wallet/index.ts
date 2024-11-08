@@ -1,0 +1,1 @@
+export { SERVICE as WALLET_SERVICE } from "./service";

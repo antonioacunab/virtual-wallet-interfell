@@ -1,0 +1,1 @@
+export { SERVICE as CUSTOMER_SERVICE } from "./service";
