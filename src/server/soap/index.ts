@@ -1,3 +1,9 @@
+import type {
+              IncomingMessage,
+              Server,
+              ServerResponse,
+            } from "http";
+
 import fs   from "fs";
 import http from "http";
 import path from "path";
@@ -12,8 +18,8 @@ const WSDL_CONTENT: string = fs.readFileSync(PATH_TO_WSDL, "utf-8");
 
 const CUSTOMER_SERVICE = {
     CustomerService: {
-        CustomerPortType: {
-            createCustomer (args: any): CustomServerResponse
+        CustomerPort: {
+            createCustomer (args: any)
             {
                 console.log('Datos recibidos para crear cliente:', args);
 
@@ -23,7 +29,7 @@ const CUSTOMER_SERVICE = {
                 return {
                     success: true,
                     code: 0,
-                    message: 'Client created successfully',
+                    message: 'Funds added successfully',
                 };
             },
         }
@@ -32,7 +38,7 @@ const CUSTOMER_SERVICE = {
 
 const WALLET_SERVICE = {
     WalletService: {
-        WalletServicePort: {
+        WalletPort: {
             AddFunds (args: any): CustomServerResponse
             {
                 console.log('Datos recibidos para agregar fondos:', args);
@@ -50,15 +56,17 @@ const WALLET_SERVICE = {
     }
 }
 
-const server = http.createServer();
+const SERVER: Server = http.createServer(
+    (_request: IncomingMessage, response: ServerResponse) => response.end("Server is running")
+);
 
-const PORT: number = 8000;
+const PORT: string | number = process.env.SOAP_PORT || 8000;
 
-const soapServerUrl = `http://localhost:${PORT}/wsdl`;
+SERVER.listen(PORT, () => {
+    const soapServerUrl = `http://localhost:${PORT}/`;
 
-listen(server, '/customers', CUSTOMER_SERVICE, WSDL_CONTENT);
-listen(server, '/wallet', WALLET_SERVICE, WSDL_CONTENT);
+    console.log(`SOAP server listening on: ${soapServerUrl}`);
 
-server.listen(PORT, () => {
-  console.log(`Servidor SOAP escuchando en ${soapServerUrl}`);
+    listen(SERVER, '/customers', CUSTOMER_SERVICE, WSDL_CONTENT);
+    listen(SERVER, '/wallet', WALLET_SERVICE, WSDL_CONTENT);
 });
