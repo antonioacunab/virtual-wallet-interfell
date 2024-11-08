@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<definitions name="CustomerService"
+    targetNamespace="http://www.example.org/CustomerService/"
+    xmlns:tns="http://www.example.org/CustomerService/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+    <!-- Generic output message -->
+    <message name="Response">
+        <part name="success" type="xsd:boolean"/>
+        <part name="code"    type="xsd:int"/>
+        <part name="message" type="xsd:string"/>
+    </message>
+
+    <!-- Definitions for customer service -->
+
+        <!-- Input message for "createCustomer" -->
+        <message name="CreateCustomerRequest">
+            <part name="document" type="xsd:string"/>
+            <part name="name"     type="xsd:string"/>
+            <part name="email"    type="xsd:string"/>
+            <part name="phone"    type="xsd:int"/>
+        </message>
+
+        <!-- Port type for customer service -->
+        <portType name="CustomerPortType">
+            <operation name="createCustomer">
+                <input message="tns:CreateCustomerRequest"/>
+                <output message="tns:Response"/>
+            </operation>
+        </portType>
+
+    <!-- Definition for wallet service -->
+
+        <!-- Input message for "getBalance" -->
+        <message name="GetBalanceRequest">
+            <part name="document" type="xsd:string"/>
+            <part name="phone"    type="xsd:int"/>
+        </message>
+
+        <!-- Input message for "addFunds" -->
+        <message name="AddFundsRequest">
+            <part name="document" type="xsd:string"/>
+            <part name="phone"    type="xsd:int"/>
+            <part name="amount"   type="xsd:int"/>
+        </message>
+
+        <!-- Input message for "pay" -->
+        <message name="PayRequest">
+            <part name="document"      type="xsd:string"/>
+            <part name="phone"         type="xsd:int"/>
+            <part name="purchaseValue" type="xsd:int"/>
+        </message>
+
+        <!-- Input message for "confirmPay" -->
+        <message name="ConfirmPayRequest">
+            <part name="email"         type="xsd:string"/>
+            <part name="purchaseValue" type="xsd:int"/>
+            <part name="userToken"     type="xsd:string"/>
+        </message>
+
+        <!-- Port type for wallet service -->
+        <portType name="WalletPortType">
+            <operation name="getBalance">
+                <input message="tns:GetBalanceRequest"/>
+                <output message="tns:Response"/>
+            </operation>
+            <operation name="addFunds">
+                <input message="tns:AddFundsRequest"/>
+                <output message="tns:Response"/>
+            </operation>
+            <operation name="pay">
+                <input message="tns:PayRequest"/>
+                <output message="tns:Response"/>
+            </operation>
+            <operation name="confirmPay">
+                <input message="tns:ConfirmPayRequest"/>
+                <output message="tns:Response"/>
+            </operation>
+        </portType>
+
+    <!-- Definición del binding para el protocolo SOAP -->
+    <binding name="CustomerBinding" type="tns:CustomerPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="createCustomer">
+            <soap:operation soapAction="http://localhost:8000/CustomerService/createCustomer"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+
+    <binding name="WalletBinding" type="tns:WalletPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="getBalance">
+            <soap:operation soapAction="http://localhost:8000/WalletService/getBalance"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+
+    <!-- Definición del servicio y la ubicación de la dirección del servicio SOAP -->
+    <service name="CustomerService">
+        <port name="CustomerServicePort" binding="tns:CustomerBinding">
+            <soap:address location="http://localhost:8000/customers"/>
+        </port>
+    </service>
+
+    <service name="WalletService">
+        <port name="WalletServicePort" binding="tns:WalletBinding">
+            <soap:address location="http://localhost:8000/wallet"/>
+        </port>
+    </service>
+</definitions>
