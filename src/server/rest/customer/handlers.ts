@@ -3,7 +3,7 @@ import type {
               Response,
             } from "express";
 
-import { respondWithStatus } from "../helpers/response";
+import { respondWithStatus } from "../../../helpers/response";
 
 import {
          throwIfNoPlainObject,
@@ -30,7 +30,7 @@ export function createCustomer (request: Request, response: Response)
         throwIfNoValidString(body.document);
         throwIfNoValidString(body.name);
         throwIfNoValidString(body.email);
-        throwIfNoValidNumber(body.phone);
+        throwIfNoValidString(body.phone);
     }
     catch (error: any)
     {
