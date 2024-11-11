@@ -1,3 +1,8 @@
+/**
+ * Returns a random 6 digits string
+ *
+ * @returns
+ */
 export function generateSixNumbersToken (): string
 {
     let token: string = "";
