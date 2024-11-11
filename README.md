@@ -12,6 +12,12 @@ Ensure that you have `node.js` version `v20.17.0` installed. Then, install depen
 npm install
 ```
 
+Install `ts-node` globally
+
+```bash
+npm install ts-node -g
+```
+
 Also, ensure to create a `.env` file containing the following variables:
 
 - MYSQL_HOST: The host were the database is located
