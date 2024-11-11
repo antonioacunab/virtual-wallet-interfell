@@ -47,15 +47,56 @@ async function getBalance (args: any): Promise<CustomServerResponse>
     return output;
 }
 
+async function addFunds (args: any): Promise<CustomServerResponse>
+{
+    const { document, phone, amount } = args;
+
+    try
+    {
+        throwIfNoValidString(document);
+        throwIfNoValidString(phone);
+        throwIfNoValidString(amount);
+    }
+    catch (error: any)
+    {
+        return Promise.resolve({
+            success: false,
+            code: 400,
+            message: `Funds could not be added: ${error.message}`,
+        });
+    }
+
+    // Get the current balance to add the adding amount to it
+    const currentFunds: string = (await (getBalance({document, phone}))).message;
+
+    // Calculating the new balance
+    const newBalance: number = parseInt(currentFunds) + parseInt(amount);
+
+    const output: Promise<CustomServerResponse> = MY_SQL_SERVICE.query(
+        `UPDATE ${process.env.MYSQL_TABLE_NAME} SET funds = ${newBalance} WHERE document = "${document}" AND phone = "${phone}"`
+    )
+        .then((_result: any) => {
                 return {
                     success: true,
                     code: 0,
-                    message: "Funds added successfully",
+                message: `Funds added successfully`,
+            };
+        })
+        .catch((_error: any) => {
+            return {
+                success: false,
+                code: 500,
+                message: `Funds could not be added`,
                 };
+        });
+
+    return output;
+}
 export const SERVICE = {
     WalletService: {
         WalletPort: {
             getBalance,
+            addFunds,
             pay (args: any): CustomServerResponse
             {
                 console.log("Datos recibidos para pagar:", args);
