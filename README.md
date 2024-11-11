@@ -37,15 +37,13 @@ You can also modify the following variables in case you need it:
 
 Ensure that you have a MySQL database with a table as follow:
 
-+----------+-------------+------+-----+---------+-------+
 | Field    | Type        | Null | Key | Default | Extra |
-+----------+-------------+------+-----+---------+-------+
+|----------|-------------|------|-----|---------|-------|
 | document | varchar(20) | NO   | PRI | NULL    |       |
 | name     | varchar(50) | NO   |     | NULL    |       |
 | email    | varchar(50) | NO   |     | NULL    |       |
 | phone    | varchar(20) | NO   |     | NULL    |       |
 | funds    | int         | NO   |     | 0       |       |
-+----------+-------------+------+-----+---------+-------+
 
 ## REST Service
 
