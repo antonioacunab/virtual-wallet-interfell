@@ -9,20 +9,20 @@
     <!-- Input message for "getBalance" -->
     <message name="GetBalanceRequest">
         <part name="document" type="xsd:string"/>
-        <part name="phone"    type="xsd:int"/>
+        <part name="phone"    type="xsd:string"/>
     </message>
 
     <!-- Input message for "addFunds" -->
     <message name="AddFundsRequest">
         <part name="document" type="xsd:string"/>
-        <part name="phone"    type="xsd:int"/>
+        <part name="phone"    type="xsd:string"/>
         <part name="amount"   type="xsd:int"/>
     </message>
 
     <!-- Input message for "pay" -->
     <message name="PayRequest">
         <part name="document"      type="xsd:string"/>
-        <part name="phone"         type="xsd:int"/>
+        <part name="phone"         type="xsd:string"/>
         <part name="purchaseValue" type="xsd:int"/>
     </message>
 

@@ -8,10 +8,10 @@
 
     <!-- Input message for "createCustomer" -->
     <message name="CreateCustomerRequest">
-        <part name="document" type="xsd:string" minOccurs="1"/>
-        <part name="name"     type="xsd:string" minOccurs="1"/>
-        <part name="email"    type="xsd:string" minOccurs="1"/>
-        <part name="phone"    type="xsd:int" minOccurs="1"/>
+        <part name="document" type="xsd:string"/>
+        <part name="name"     type="xsd:string"/>
+        <part name="email"    type="xsd:string"/>
+        <part name="phone"    type="xsd:string"/>
     </message>
 
     <!-- Generic output message -->
