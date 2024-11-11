@@ -76,6 +76,10 @@ function sendRequestToSOAPServer (client: Client, operationName: string, args: R
             else
                 result.code = parseInt(result.code)
 
+            // TODO: Se debe hacer más robusta la selección de los códigos de error para que expresen correctamente el tipo de error que se presentó
+            // TODO: Se deben revisar los mensajes de error dado que pueden ocasionar fuga de información
+            // TODO: Se debe implementar una estrategia para hacer rollback de la base de datos cuando sucedan errores en esta etapa
+
             resolve(result);
         });
     });
