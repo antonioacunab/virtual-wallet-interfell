@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<definitions name="VirtualWallet"
+    targetNamespace="http://www.example.org/VirtualWallet/"
+    xmlns:tns="http://www.example.org/CustomerService/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+    <!-- Input message for "createCustomer" -->
+    <message name="CreateCustomerRequest">
+        <part name="document" type="xsd:string" minOccurs="1"/>
+        <part name="name"     type="xsd:string" minOccurs="1"/>
+        <part name="email"    type="xsd:string" minOccurs="1"/>
+        <part name="phone"    type="xsd:int" minOccurs="1"/>
+    </message>
+
+    <!-- Generic output message -->
+    <message name="Response">
+        <part name="success" type="xsd:boolean"/>
+        <part name="code"    type="xsd:int"/>
+        <part name="message" type="xsd:string"/>
+    </message>
+
+    <!-- Port type for customer service -->
+    <portType name="CustomerPortType">
+        <operation name="createCustomer">
+            <input message="tns:CreateCustomerRequest"/>
+            <output message="tns:Response"/>
+        </operation>
+    </portType>
+
+    <!-- Binding definition -->
+    <binding name="CustomerBinding" type="tns:CustomerPortType">
+        <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="createCustomer">
+            <soap:operation soapAction="http://www.example.org/VirtualWallet/createCustomer"/>
+            <input>
+                <soap:body use="literal" namespace="http://www.example.org/VirtualWallet"/>
+            </input>
+            <output>
+                <soap:body use="literal" namespace="http://www.example.org/VirtualWallet"/>
+            </output>
+        </operation>
+    </binding>
+
+    <!-- Service definition -->
+    <service name="CustomerService">
+        <port name="CustomerPort" binding="tns:CustomerBinding">
+            <soap:address location="http://localhost:8000/customers"/>
+        </port>
+    </service>
+
+</definitions>

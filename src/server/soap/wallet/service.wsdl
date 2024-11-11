@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<definitions name="VirtualWallet"
+    targetNamespace="http://www.example.org/VirtualWallet/"
+    xmlns:tns="http://www.example.org/WalletService/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+    <!-- Input message for "getBalance" -->
+    <message name="GetBalanceRequest">
+        <part name="document" type="xsd:string"/>
+        <part name="phone"    type="xsd:int"/>
+    </message>
+
+    <!-- Input message for "addFunds" -->
+    <message name="AddFundsRequest">
+        <part name="document" type="xsd:string"/>
+        <part name="phone"    type="xsd:int"/>
+        <part name="amount"   type="xsd:int"/>
+    </message>
+
+    <!-- Input message for "pay" -->
+    <message name="PayRequest">
+        <part name="document"      type="xsd:string"/>
+        <part name="phone"         type="xsd:int"/>
+        <part name="purchaseValue" type="xsd:int"/>
+    </message>
+
+    <!-- Input message for "confirmPay" -->
+    <message name="ConfirmPayRequest">
+        <part name="sessionId" type="xsd:string"/>
+        <part name="userToken" type="xsd:string"/>
+    </message>
+
+    <!-- Generic output message -->
+    <message name="Response">
+        <part name="success" type="xsd:boolean"/>
+        <part name="code"    type="xsd:int"/>
+        <part name="message" type="xsd:string"/>
+    </message>
+
+    <!-- Port type for wallet service -->
+    <portType name="WalletPortType">
+        <operation name="getBalance">
+            <input message="tns:GetBalanceRequest"/>
+            <output message="tns:Response"/>
+        </operation>
+        <operation name="addFunds">
+            <input message="tns:AddFundsRequest"/>
+            <output message="tns:Response"/>
+        </operation>
+        <operation name="pay">
+            <input message="tns:PayRequest"/>
+            <output message="tns:Response"/>
+        </operation>
+        <operation name="confirmPay">
+            <input message="tns:ConfirmPayRequest"/>
+            <output message="tns:Response"/>
+        </operation>
+    </portType>
+
+    <!-- Binding definition -->
+    <binding name="WalletBinding" type="tns:WalletPortType">
+        <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="getBalance">
+            <soap:operation soapAction="http://www.example.org/VirtualWallet/getBalance"/>
+            <input>
+                <soap:body use="literal" namespace="http://www.example.org/VirtualWallet"/>
+            </input>
+            <output>
+                <soap:body use="literal" namespace="http://www.example.org/VirtualWallet"/>
+            </output>
+        </operation>
+        <operation name="addFunds">
+            <soap:operation soapAction="http://www.example.org/VirtualWallet/addFunds"/>
+            <input>
+                <soap:body use="literal" namespace="http://www.example.org/VirtualWallet"/>
+            </input>
+            <output>
+                <soap:body use="literal" namespace="http://www.example.org/VirtualWallet"/>
+            </output>
+        </operation>
+        <operation name="pay">
+            <soap:operation soapAction="http://www.example.org/VirtualWallet/pay"/>
+            <input>
+                <soap:body use="literal" namespace="http://www.example.org/VirtualWallet"/>
+            </input>
+            <output>
+                <soap:body use="literal" namespace="http://www.example.org/VirtualWallet"/>
+            </output>
+        </operation>
+        <operation name="confirmPay">
+            <soap:operation soapAction="http://www.example.org/VirtualWallet/confirmPay"/>
+            <input>
+                <soap:body use="literal" namespace="http://www.example.org/VirtualWallet"/>
+            </input>
+            <output>
+                <soap:body use="literal" namespace="http://www.example.org/VirtualWallet"/>
+            </output>
+        </operation>
+    </binding>
+
+    <!-- Service definition -->
+    <service name="WalletService">
+        <port name="WalletPort" binding="tns:WalletBinding">
+            <soap:address location="http://localhost:8000/wallet"/>
+        </port>
+    </service>
+</definitions>
