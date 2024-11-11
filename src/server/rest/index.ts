@@ -13,4 +13,11 @@ app.use(express.text());
 app.use("/customers", CUSTOMER_ROUTER);
 app.use("/wallet"   , WALLET_ROUTER);
 
-app.listen("3000");
+/**
+ * Port where the server will be listening
+ */
+const PORT: string | number = process.env.REST_PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Server listening on: http://localhost:${PORT}`)
+});
