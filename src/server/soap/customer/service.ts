@@ -33,7 +33,7 @@ function createCustomer (args: any): Promise<CustomServerResponse>
         .then(() => {
             return {
                 success: true,
-                code: 0,
+                code: 200,
                 message: "Customer created successfully",
             };
         })

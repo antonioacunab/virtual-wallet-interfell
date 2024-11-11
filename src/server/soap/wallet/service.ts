@@ -62,7 +62,7 @@ async function getBalance (args: any): Promise<CustomServerResponse>
 
             return {
                 success: true,
-                code: 0,
+                code: 200,
                 message: `${funds}`,
             };
         })
@@ -113,7 +113,7 @@ async function addFunds (args: any): Promise<CustomServerResponse>
         .then((_result: any) => {
             return {
                 success: true,
-                code: 0,
+                code: 200,
                 message: `Funds added successfully`,
             };
         })
@@ -189,7 +189,7 @@ async function pay (args: any): Promise<CustomServerResponse>
 
     return {
         success: true,
-        code: 0,
+        code: 200,
         message: JSON.stringify(outputData), // TODO: El token no se debería enviar en la respuesta, si no al correo. Se hace para facilidad de testeo. Corregir
     };
 }
@@ -259,7 +259,7 @@ async function confirmPay (args: any): Promise<CustomServerResponse>
 
             return {
                 success: true,
-                code: 0,
+                code: 200,
                 message: `Payment confirmed. New balance: ${newBalance}`,
             };
         })

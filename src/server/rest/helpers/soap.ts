@@ -71,10 +71,7 @@ function sendRequestToSOAPServer (client: Client, operationName: string, args: R
                     message: error,
                 });
 
-            if (result.code === 0)
-                result.code = 200; // TODO: Esto es para evitar errores al momento de setear el header de la respuesta. Se debe corregir
-            else
-                result.code = parseInt(result.code)
+            result.code = parseInt(result.code)
 
             // TODO: Se debe hacer más robusta la selección de los códigos de error para que expresen correctamente el tipo de error que se presentó
             // TODO: Se deben revisar los mensajes de error dado que pueden ocasionar fuga de información
