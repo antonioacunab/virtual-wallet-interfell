@@ -1,7 +1,7 @@
-import { CustomServerResponse } from "../../../helpers/response";
+import { CustomServerResponse    } from "../../../helpers/response";
 import { generateSixNumbersToken } from "../../../helpers/token";
-import { throwIfNoValidString } from "../../../helpers/user-data";
-import { MY_SQL_SERVICE       } from "../../../services/mysql";
+import { throwIfNoValidString    } from "../../../helpers/user-data";
+import { MY_SQL_SERVICE          } from "../../../services/mysql";
 
 /**
  * Defines a purchase from a user
@@ -25,7 +25,7 @@ const PURCHASES_IN_PROCESS: Record<string, PurchaseInProcess> = { }; // TODO: Es
 /**
  * Token expiration time
  */
-const TOKEN_DURATION: number = 60000;
+const TOKEN_DURATION: number = process.env.TOKEN_EXPIRATION != null ? parseInt(process.env.TOKEN_EXPIRATION) : 60000;
 
 /**
  * Returns the current balance of the wallet of a specific document and phone pair
