@@ -11,8 +11,7 @@ import {
 
 export const ROUTER: Router = express.Router();
 
-ROUTER.get("/balance", getBalance);
-
-ROUTER.post("/addFunds"   , addFunds);
-ROUTER.post("/pay"        , payPurchase);
-ROUTER.post("/pay/confirm", confirmPayment);
+ROUTER.post("/balance"   , getBalance);
+ROUTER.post("/addFunds"  , addFunds);
+ROUTER.post("/pay"       , payPurchase);
+ROUTER.post("/confirmPay", confirmPayment);
