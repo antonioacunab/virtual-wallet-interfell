@@ -3,7 +3,10 @@ import type {
               Response,
             } from "express";
 
-import { respondWithStatus } from "../../../helpers/http";
+import {
+         CustomServerResponse,
+         respondWithStatus,
+       } from "../../../helpers/response";
 
 import {
          throwIfNoPlainObject,
@@ -11,7 +14,9 @@ import {
          throwIfNoValidNumber,
        } from "../../../helpers/user-data";
 
-export function getBalance (request: Request, response: Response): void
+import { sendRequestToWalletSOAPServer } from "../helpers/soap";
+
+export async function getBalance (request: Request, response: Response): Promise<void>
 {
     const body: any = request.body;
 
@@ -20,22 +25,26 @@ export function getBalance (request: Request, response: Response): void
         throwIfNoPlainObject(body);
 
         throwIfNoValidString(body.document);
-        throwIfNoValidNumber(body.phone);
+        throwIfNoValidString(body.phone);
     }
     catch (error: any)
     {
-        respondWithStatus(request, response, 400, `An error occurred while trying to deposit money on the wallet: ${(error as Error).message}`);
+        respondWithStatus(request, response, 400, `An error occurred while trying to get the balance of the wallet: ${(error as Error).message}`);
     }
 
-    const userData: Record<string, any> = {
+    const args: Record<string, any> = {
         document: body.document,
         phone   : body.phone,
-    }
+    };
 
-    checkBalance(userData);
+    const result: CustomServerResponse = await sendRequestToWalletSOAPServer("getBalance", args);
+
+    response.statusCode = result.code;
+
+    response.end(JSON.stringify(result));
 }
 
-export function addFunds (request: Request, response: Response): void
+export async function addFunds (request: Request, response: Response): Promise<void>
 {
     const body: any = request.body;
 
@@ -44,7 +53,7 @@ export function addFunds (request: Request, response: Response): void
         throwIfNoPlainObject(body);
 
         throwIfNoValidString(body.document);
-        throwIfNoValidNumber(body.phone);
+        throwIfNoValidString(body.phone);
         throwIfNoValidNumber(body.amount);
     }
     catch (error: any)
@@ -52,21 +61,73 @@ export function addFunds (request: Request, response: Response): void
         respondWithStatus(request, response, 400, `An error occurred while trying to deposit money on the wallet: ${(error as Error).message}`);
     }
 
-    const depositData: Record<string, any> = {
+    const args: Record<string, any> = {
         document: body.document,
         phone   : body.phone,
         amount  : body.amount,
+    };
+
+    const result: CustomServerResponse = await sendRequestToWalletSOAPServer("addFunds", args);
+
+    response.statusCode = result.code;
+
+    response.end(JSON.stringify(result));
+}
+
+export async function payPurchase (request: Request, response: Response): Promise<void>
+{
+    const body: any = request.body;
+
+    try
+    {
+        throwIfNoPlainObject(body);
+
+        throwIfNoValidString(body.document);
+        throwIfNoValidString(body.phone);
+        throwIfNoValidNumber(body.purchaseValue);
+    }
+    catch (error: any)
+    {
+        respondWithStatus(request, response, 400, `An error occurred while trying to pay a purchase: ${(error as Error).message}`);
     }
 
-    addFunds(depositData);
+    const args: Record<string, any> = {
+        document     : body.document,
+        phone        : body.phone,
+        purchaseValue: body.purchaseValue,
+    };
+
+    const result: CustomServerResponse = await sendRequestToWalletSOAPServer("pay", args);
+
+    response.statusCode = result.code;
+
+    response.end(JSON.stringify(result));
 }
 
-export function payPurchase (request: Request, response: Response): void
+export async function confirmPayment (request: Request, response: Response): Promise<void>
 {
+    const body: any = request.body;
 
-}
+    try
+    {
+        throwIfNoPlainObject(body);
 
-export function confirmPayment (request: Request, response: Response): void
-{
+        throwIfNoValidString(body.sessionId);
+        throwIfNoValidString(body.userToken);
+    }
+    catch (error: any)
+    {
+        respondWithStatus(request, response, 400, `An error occurred while trying to confirm a payment: ${(error as Error).message}`);
+    }
 
+    const args: Record<string, any> = {
+        sessionId: body.sessionId,
+        userToken: body.userToken,
+    };
+
+    const result: CustomServerResponse = await sendRequestToWalletSOAPServer("confirmPay", args);
+
+    response.statusCode = result.code;
+
+    response.end(JSON.stringify(result));
 }
