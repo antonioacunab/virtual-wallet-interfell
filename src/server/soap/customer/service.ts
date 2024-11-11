@@ -5,14 +5,14 @@ export const SERVICE = {
         CustomerPort: {
             createCustomer (args: any): CustomServerResponse
             {
-                console.log('Datos recibidos para crear cliente:', args);
+                console.log("Datos recibidos para crear cliente:", args);
 
                 // TODO: Aquí se debe implementar la lógica de negocio
 
                 return {
                     success: true,
                     code: 0,
-                    message: 'Funds added successfully',
+                    message: "Customer created successfully",
                 };
             },
         }
