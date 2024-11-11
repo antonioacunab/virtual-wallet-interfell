@@ -1,14 +1,18 @@
 {
     "scripts": {
         "start:rest": "ts-node src/server/rest/index.ts",
-        "start:soap": "ts-node src/server/soap/index.ts"
+        "start:soap": "ts-node src/server/soap/index.ts",
+        "test": "npx jest"
     },
     "devDependencies": {
         "@types/express": "^5.0.0",
-        "@types/soap": "^0.18.0"
+        "@types/jest": "^29.5.14",
+        "@types/soap": "^0.18.0",
+        "ts-jest": "^29.2.5"
     },
     "dependencies": {
         "express": "^4.21.1",
+        "jest": "^29.7.0",
         "mysql2": "^3.11.4",
         "soap": "^1.1.6"
     }
