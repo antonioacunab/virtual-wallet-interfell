@@ -20,6 +20,13 @@ Also, ensure to create a `.env` file containing the following variables:
 - MYSQL_DATABASE: The name of the database to be used
 - MYSQL_TABLE_NAME: The name of the table into the database
 
+You can also modify the following variables in case you need it:
+
+- REST_PORT: Port where the rest server will be executed. Defaults to 3000
+- SOAP_PORT: Port where the rest server will be executed. Defaults to 8000
+- SOAP_CUSTOMERS_SERVER_LOCATION: URL where the customers SOAP server is located. Defaults to http://localhost:8000/customers?wsdl
+- SOAP_WALLET_SERVER_LOCATION: URL where the wallet SOAP server is located. Defaults to http://localhost:8000/wallet?wsdl
+
 ### Database
 
 Ensure that you have a MySQL database with a table as follow:
@@ -42,7 +49,80 @@ In order to start the REST server, run the command
 npm run start:rest
 ```
 
-The server will be available at http://localhost:3000/. In case you want to use a different port, set the environment variable REST_PORT.
+The server will be available at http://localhost:3000/. In case you want to use a different port, set the environment variable `REST_PORT`.
+
+## Messages for REST Service
+
+You can use the following sample messages to check the behavior of the REST server
+
+### Customers
+
+The customers service is available at http://localhost:3000/customers. In order to get a response from the service, you must make a `POST` request, ensuring that the header `Content-Type` has the value `application/json`.
+
+#### Creating a customer
+
+Make a POST request to http://localhost:3000/customers/create
+
+```json
+{
+	"document": "1234567890",
+	"name": "John Doe",
+	"email": "johndoe@example.com",
+	"phone": "3123456789"
+}
+```
+
+### Wallet
+
+The customers service is available at http://localhost:3000/wallet. In order to get a response from the service, you must make a `POST` request, ensuring that the header `Content-Type` has the value `application/json`.
+
+#### Getting the wallet balance
+
+Make a POST request to http://localhost:3000/wallet/balance
+
+```json
+{
+	"document": "1234567890",
+	"phone": "3123456789"
+}
+```
+
+#### Adding funds
+
+Make a POST request to http://localhost:3000/wallet/addFunds
+
+```json
+{
+	"document": "1234567890",
+	"phone": "3123456789",
+	"amount": 50000
+}
+```
+
+#### Paying a purchase
+
+Make a POST request to http://localhost:3000/wallet/pay
+
+```json
+{
+	"document": "1234567890",
+	"phone": "3123456789",
+	"purchaseValue": 50000
+}
+```
+
+#### Confirming a payment
+
+Make a POST request to http://localhost:3000/wallet/confirmPay
+
+```json
+{
+	"sessionId": "123456789011",
+	"userToken": "961085"
+}
+```
+
+Keep in mind that `sessionId` and `userToken` must be obtained from the response of the endpoint http://localhost:3000/wallet/pay and they have an expiration time of 60 seconds by default. To modify the expiration time, set the variable `TOKEN_EXPIRATION` in milliseconds, i.e. `120000` for an expiration time of two minutes.
 
 ## SOAP Service
 
@@ -52,7 +132,7 @@ In order to start the SOAP server, run the command
 npm run start:soap
 ```
 
-The server will be available at http://localhost:8000/. In case you want to use a different port, set the environment variable SOAP_PORT.
+The server will be available at http://localhost:8000/. In case you want to use a different port, set the environment variable `SOAP_PORT`.
 
 ## Messages for SOAP Service
 
