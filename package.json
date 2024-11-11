@@ -1,10 +1,16 @@
 {
+    "scripts": {
+        "start:rest": "ts-node src/server/rest/index.ts",
+        "start:soap": "ts-node src/server/soap/index.ts"
+    },
     "devDependencies": {
         "@types/express": "^5.0.0",
+        "@types/mysql": "^2.15.26",
         "@types/soap": "^0.18.0"
     },
     "dependencies": {
         "express": "^4.21.1",
+        "mysql": "^2.18.1",
         "soap": "^1.1.6"
     }
 }
