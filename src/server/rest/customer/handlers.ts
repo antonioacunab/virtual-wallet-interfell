@@ -10,21 +10,12 @@ import {
 
 import {
          throwIfNoPlainObject,
-         throwIfNoValidNumber,
          throwIfNoValidString,
        } from "../../../helpers/user-data";
 
 import { sendRequestToCustomersSOAPServer } from "../helpers/soap";
 
-interface CustomerData
-{
-    document: string;
-    name    : string;
-    email   : string;
-    phone   : number;
-}
-
-export async function createCustomer (request: Request, response: Response)
+export async function createCustomer (request: Request, response: Response): Promise<void>
 {
     const body: any = request.body;
 
@@ -42,14 +33,16 @@ export async function createCustomer (request: Request, response: Response)
         respondWithStatus(request, response, 400, `An error occurred while trying to create a customer: ${(error as Error).message}`)
     }
 
-    const customerData: CustomerData = {
+    const args: Record<string, any> = {
         document: body.document,
         name: body.name,
         email: body.email,
         phone: body.phone,
     }
 
-    const result: CustomServerResponse = await sendRequestToCustomersSOAPServer("createCustomer", customerData);
+    const result: CustomServerResponse = await sendRequestToCustomersSOAPServer("createCustomer", args);
+
+    response.statusCode = result.code;
 
     response.end(JSON.stringify(result));
 }
