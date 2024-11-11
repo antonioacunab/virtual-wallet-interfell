@@ -71,6 +71,7 @@ export class MySQLDatatableService
     }
 }
 
+// Load the environment variables when the module is called
 process.loadEnvFile(".env");
 
 const DATABASE_HOST    : string = process.env.MYSQL_HOST     || "";
