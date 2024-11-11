@@ -16,6 +16,12 @@ import {
 
 import { sendRequestToWalletSOAPServer } from "../helpers/soap";
 
+/**
+ * Communicate with the SOAP service to get the wallet balance
+ *
+ * @param request  - A Request Object
+ * @param response - A Response Object
+ */
 export async function getBalance (request: Request, response: Response): Promise<void>
 {
     const body: any = request.body;
@@ -44,6 +50,12 @@ export async function getBalance (request: Request, response: Response): Promise
     response.end(JSON.stringify(result));
 }
 
+/**
+ * Communicate with the SOAP service to add funds to the wallet
+ *
+ * @param request  - A Request Object
+ * @param response - A Response Object
+ */
 export async function addFunds (request: Request, response: Response): Promise<void>
 {
     const body: any = request.body;
@@ -74,6 +86,12 @@ export async function addFunds (request: Request, response: Response): Promise<v
     response.end(JSON.stringify(result));
 }
 
+/**
+ * Communicate with the SOAP service to pay a purchase
+ *
+ * @param request  - A Request Object
+ * @param response - A Response Object
+ */
 export async function payPurchase (request: Request, response: Response): Promise<void>
 {
     const body: any = request.body;
@@ -104,6 +122,12 @@ export async function payPurchase (request: Request, response: Response): Promis
     response.end(JSON.stringify(result));
 }
 
+/**
+ * Communicate with the SOAP service to confirm a purchase pay
+ *
+ * @param request  - A Request Object
+ * @param response - A Response Object
+ */
 export async function confirmPayment (request: Request, response: Response): Promise<void>
 {
     const body: any = request.body;

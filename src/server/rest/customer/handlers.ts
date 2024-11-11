@@ -15,6 +15,12 @@ import {
 
 import { sendRequestToCustomersSOAPServer } from "../helpers/soap";
 
+/**
+ * Communicate with the SOAP service to create a customer
+ *
+ * @param request  - A Request Object
+ * @param response - A Response Object
+ */
 export async function createCustomer (request: Request, response: Response): Promise<void>
 {
     const body: any = request.body;
