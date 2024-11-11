@@ -3,6 +3,9 @@ import { generateSixNumbersToken } from "../../../helpers/token";
 import { throwIfNoValidString } from "../../../helpers/user-data";
 import { MY_SQL_SERVICE       } from "../../../services/mysql";
 
+/**
+ * Defines a purchase from a user
+ */
 interface PurchaseInProcess
 {
     document : string;
@@ -12,10 +15,23 @@ interface PurchaseInProcess
     value    : string;
 }
 
-const PURCHASES_IN_PROCESS: Record<string, PurchaseInProcess> = { };
+/**
+ * List of purchases in progress
+ *
+ * @remarks A purchase in progress is a purchase that is waiting for confirmation through a token
+ */
+const PURCHASES_IN_PROCESS: Record<string, PurchaseInProcess> = { }; // TODO: Este almacenamiento debería ir en una base de datos, no en una tabla
 
+/**
+ * Token expiration time
+ */
 const TOKEN_DURATION: number = 60000;
 
+/**
+ * Returns the current balance of the wallet of a specific document and phone pair
+ *
+ * @param args - An object containing the properties "document" and "phone"
+ */
 async function getBalance (args: any): Promise<CustomServerResponse>
 {
     const { document, phone } = args;
@@ -61,6 +77,11 @@ async function getBalance (args: any): Promise<CustomServerResponse>
     return output;
 }
 
+/**
+ * Adds funds to the wallet of a specific document and phone pair
+ *
+ * @param args - An object containing the properties "document", "phone" and "amount"
+ */
 async function addFunds (args: any): Promise<CustomServerResponse>
 {
     const { document, phone, amount } = args;
@@ -80,7 +101,7 @@ async function addFunds (args: any): Promise<CustomServerResponse>
         });
     }
 
-    // Get the current balance to add the adding amount to it
+    // Get the current balance to add the incoming amount to it
     const currentFunds: string = (await (getBalance({document, phone}))).message;
 
     // Calculating the new balance
@@ -107,6 +128,11 @@ async function addFunds (args: any): Promise<CustomServerResponse>
     return output;
 }
 
+/**
+ * Creates a purchase in progress for a specific document and phone pair
+ *
+ * @param args - An object containing the properties "document", "phone" and "purchaseValue"
+ */
 async function pay (args: any): Promise<CustomServerResponse>
 {
     const { document, phone, purchaseValue } = args;
@@ -129,6 +155,7 @@ async function pay (args: any): Promise<CustomServerResponse>
     // Get the current balance to check if the purchase can be done
     const currentFunds: string = (await (getBalance({document, phone}))).message;
 
+    // Return if the wallet balance is lower than the purchase value
     if (parseInt(currentFunds) < parseInt(purchaseValue))
         return Promise.resolve({
             success: false,
@@ -136,13 +163,8 @@ async function pay (args: any): Promise<CustomServerResponse>
             message: `Purchase value exceeds your wallet balance`,
         });
 
-    const sessionID: string = `${document}${(new Date()).getDate()}`; // TODO: Escoger una forma de crear este valor
+    const sessionID: string = `${document}${(new Date()).getDate()}`; // TODO: Escoger una forma más robusta de crear este valor
     const token: string = generateSixNumbersToken();
-
-    const outputData: Record<string, any> = {
-        sessionID,
-        token,
-    };
 
     const purchaseData: PurchaseInProcess = {
         document,
@@ -152,6 +174,7 @@ async function pay (args: any): Promise<CustomServerResponse>
         value: purchaseValue,
     };
 
+    // Add the purchase to a database
     PURCHASES_IN_PROCESS[sessionID] = purchaseData;
 
     // Delete the token from the storage after the expiration time
@@ -159,13 +182,23 @@ async function pay (args: any): Promise<CustomServerResponse>
         delete PURCHASES_IN_PROCESS[sessionID];
     }, TOKEN_DURATION);
 
+    const outputData: Record<string, any> = {
+        sessionID,
+        token,
+    };
+
     return {
         success: true,
         code: 0,
-        message: JSON.stringify(outputData), // TODO: El token no se debería enviar en la respuesta. Se hace para facilidad de testeo. Corregir
+        message: JSON.stringify(outputData), // TODO: El token no se debería enviar en la respuesta, si no al correo. Se hace para facilidad de testeo. Corregir
     };
 }
 
+/**
+ * Confirms a purchase in progress based on a session ID and a user token
+ *
+ * @param args - An object containing the properties "sessionId" and "userToken"
+ */
 async function confirmPay (args: any): Promise<CustomServerResponse>
 {
     const { sessionId, userToken } = args;
@@ -184,6 +217,7 @@ async function confirmPay (args: any): Promise<CustomServerResponse>
         });
     }
 
+    // Return if the session ID does not exist
     if (PURCHASES_IN_PROCESS[sessionId] == null)
         return Promise.resolve({
             success: false,
@@ -191,6 +225,7 @@ async function confirmPay (args: any): Promise<CustomServerResponse>
             message: `The provided session ID is invalid or has expired already`,
         });
 
+    // Get the user info from the session ID for further tests
     const { document, phone, sessionId: storedSessionId, token: storedToken, value } = PURCHASES_IN_PROCESS[sessionId];
 
     const areValidCredentials: boolean = sessionId === storedSessionId && userToken === storedToken;
@@ -239,6 +274,9 @@ async function confirmPay (args: any): Promise<CustomServerResponse>
     return output;
 }
 
+/**
+ * Service definition for SOAP server
+ */
 export const SERVICE = {
     WalletService: {
         WalletPort: {
