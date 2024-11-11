@@ -3,13 +3,18 @@ import type {
               Response,
             } from "express";
 
-import { respondWithStatus } from "../../../helpers/response";
+import {
+         CustomServerResponse,
+         respondWithStatus,
+       } from "../../../helpers/response";
 
 import {
          throwIfNoPlainObject,
          throwIfNoValidNumber,
          throwIfNoValidString,
        } from "../../../helpers/user-data";
+
+import { sendRequestToCustomersSOAPServer } from "../helpers/soap";
 
 interface CustomerData
 {
@@ -19,7 +24,7 @@ interface CustomerData
     phone   : number;
 }
 
-export function createCustomer (request: Request, response: Response)
+export async function createCustomer (request: Request, response: Response)
 {
     const body: any = request.body;
 
@@ -44,5 +49,7 @@ export function createCustomer (request: Request, response: Response)
         phone: body.phone,
     }
 
-    registerCustomer(customerData);
+    const result: CustomServerResponse = await sendRequestToCustomersSOAPServer("createCustomer", customerData);
+
+    response.end(JSON.stringify(result));
 }
