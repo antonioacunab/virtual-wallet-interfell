@@ -2,6 +2,38 @@
 
 Virtual Wallet is a web service that provides access to different different functionalities related to a virtual wallet such as: Creating a customer, getting the account balance, adding funds to the wallet and performing payments with token validation.
 
+## Requirements
+
+### Environment
+
+Ensure that you have `node.js` version `v20.17.0` installed. Then, install dependencies:
+
+```bash
+npm install
+```
+
+Also, ensure to create a `.env` file containing the following variables:
+
+- MYSQL_HOST: The host were the database is located
+- MYSQL_USER: The username
+- MYSQL_PASSWORD: The password associated to the username
+- MYSQL_DATABASE: The name of the database to be used
+- MYSQL_TABLE_NAME: The name of the table into the database
+
+### Database
+
+Ensure that you have a MySQL database with a table as follow:
+
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| document | varchar(20) | NO   | PRI | NULL    |       |
+| name     | varchar(50) | NO   |     | NULL    |       |
+| email    | varchar(50) | NO   |     | NULL    |       |
+| phone    | varchar(20) | NO   |     | NULL    |       |
+| funds    | int         | NO   |     | 0       |       |
++----------+-------------+------+-----+---------+-------+
+
 ## REST Service
 
 In order to start the REST server, run the command
