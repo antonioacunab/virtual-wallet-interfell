@@ -44,9 +44,9 @@ async function getBalance (args: any): Promise<CustomServerResponse>
 
             const funds: number = result[0].funds;
 
-                return {
-                    success: true,
-                    code: 0,
+            return {
+                success: true,
+                code: 0,
                 message: `${funds}`,
             };
         })
@@ -55,7 +55,7 @@ async function getBalance (args: any): Promise<CustomServerResponse>
                 success: false,
                 code: 500,
                 message: `The balance could not be obtained`,
-                };
+            };
         });
 
     return output;
@@ -90,9 +90,9 @@ async function addFunds (args: any): Promise<CustomServerResponse>
         `UPDATE ${process.env.MYSQL_TABLE_NAME} SET funds = ${newBalance} WHERE document = "${document}" AND phone = "${phone}"`
     )
         .then((_result: any) => {
-                return {
-                    success: true,
-                    code: 0,
+            return {
+                success: true,
+                code: 0,
                 message: `Funds added successfully`,
             };
         })
@@ -101,7 +101,7 @@ async function addFunds (args: any): Promise<CustomServerResponse>
                 success: false,
                 code: 500,
                 message: `Funds could not be added`,
-                };
+            };
         });
 
     return output;
@@ -165,13 +165,87 @@ async function pay (args: any): Promise<CustomServerResponse>
         message: JSON.stringify(outputData), // TODO: El token no se debería enviar en la respuesta. Se hace para facilidad de testeo. Corregir
     };
 }
+
+async function confirmPay (args: any): Promise<CustomServerResponse>
+{
+    const { sessionId, userToken } = args;
+
+    try
+    {
+        throwIfNoValidString(sessionId);
+        throwIfNoValidString(userToken);
+    }
+    catch (error: any)
+    {
+        return Promise.resolve({
+            success: false,
+            code: 400,
+            message: `Payment could not be confirmed: ${error.message}`,
+        });
+    }
+
+    if (PURCHASES_IN_PROCESS[sessionId] == null)
+        return Promise.resolve({
+            success: false,
+            code: 400,
+            message: `The provided session ID is invalid or has expired already`,
+        });
+
+    const { document, phone, sessionId: storedSessionId, token: storedToken, value } = PURCHASES_IN_PROCESS[sessionId];
+
+    const areValidCredentials: boolean = sessionId === storedSessionId && userToken === storedToken;
+
+    if ( !areValidCredentials )
+        return Promise.resolve({
+            success: false,
+            code: 400,
+            message: `Any of the provided session ID or user token is invalid`,
+        });
+
+    // Get the current balance to substract the value of the purchase from it
+    const currentFunds: string = (await (getBalance({document, phone}))).message;
+
+    if (parseInt(currentFunds) < parseInt(value))
+        return Promise.resolve({
+            success: false,
+            code: 400,
+            message: `Payment cannot be confirmed. The purchase amount exceeds your wallet balance`,
+        });
+
+    // Calculating the new balance
+    const newBalance: number = parseInt(currentFunds) - parseInt(value);
+
+    const output: Promise<CustomServerResponse> = MY_SQL_SERVICE.query(
+        `UPDATE ${process.env.MYSQL_TABLE_NAME} SET funds = ${newBalance} WHERE document = "${document}" AND phone = "${phone}"`
+    )
+        .then((_result: any) => {
+            // Delete the purchase from the list after updating the funds
+            delete PURCHASES_IN_PROCESS[sessionId];
+
+            return {
+                success: true,
+                code: 0,
+                message: `Payment confirmed. New balance: ${newBalance}`,
+            };
+        })
+        .catch((_error: any) => {
+            return {
+                success: false,
+                code: 500,
+                message: `An unexpected error ocurred while trying to confirm the payment`,
+            };
+        });
+
+    return output;
+}
+
 export const SERVICE = {
     WalletService: {
         WalletPort: {
             getBalance,
             addFunds,
             pay,
-            },
-        }
-    }
-}
+            confirmPay,
+        },
+    },
+};
