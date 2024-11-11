@@ -1,6 +1,20 @@
 import { CustomServerResponse } from "../../../helpers/response";
+import { generateSixNumbersToken } from "../../../helpers/token";
 import { throwIfNoValidString } from "../../../helpers/user-data";
 import { MY_SQL_SERVICE       } from "../../../services/mysql";
+
+interface PurchaseInProcess
+{
+    document : string;
+    phone    : string;
+    sessionId: string;
+    token    : string;
+    value    : string;
+}
+
+const PURCHASES_IN_PROCESS: Record<string, PurchaseInProcess> = { };
+
+const TOKEN_DURATION: number = 60000;
 
 async function getBalance (args: any): Promise<CustomServerResponse>
 {
@@ -92,34 +106,71 @@ async function addFunds (args: any): Promise<CustomServerResponse>
 
     return output;
 }
+
+async function pay (args: any): Promise<CustomServerResponse>
+{
+    const { document, phone, purchaseValue } = args;
+
+    try
+    {
+        throwIfNoValidString(document);
+        throwIfNoValidString(phone);
+        throwIfNoValidString(purchaseValue);
+    }
+    catch (error: any)
+    {
+        return Promise.resolve({
+            success: false,
+            code: 400,
+            message: `Purchase could not be done: ${error.message}`,
+        });
+    }
+
+    // Get the current balance to check if the purchase can be done
+    const currentFunds: string = (await (getBalance({document, phone}))).message;
+
+    if (parseInt(currentFunds) < parseInt(purchaseValue))
+        return Promise.resolve({
+            success: false,
+            code: 400,
+            message: `Purchase value exceeds your wallet balance`,
+        });
+
+    const sessionID: string = `${document}${(new Date()).getDate()}`; // TODO: Escoger una forma de crear este valor
+    const token: string = generateSixNumbersToken();
+
+    const outputData: Record<string, any> = {
+        sessionID,
+        token,
+    };
+
+    const purchaseData: PurchaseInProcess = {
+        document,
+        phone,
+        sessionId: sessionID,
+        token,
+        value: purchaseValue,
+    };
+
+    PURCHASES_IN_PROCESS[sessionID] = purchaseData;
+
+    // Delete the token from the storage after the expiration time
+    setTimeout(() => {
+        delete PURCHASES_IN_PROCESS[sessionID];
+    }, TOKEN_DURATION);
+
+    return {
+        success: true,
+        code: 0,
+        message: JSON.stringify(outputData), // TODO: El token no se debería enviar en la respuesta. Se hace para facilidad de testeo. Corregir
+    };
+}
 export const SERVICE = {
     WalletService: {
         WalletPort: {
             getBalance,
             addFunds,
-            pay (args: any): CustomServerResponse
-            {
-                console.log("Datos recibidos para pagar:", args);
-
-                // TODO: Aquí se debe implementar la lógica de negocio
-
-                return {
-                    success: true,
-                    code: 0,
-                    message: "A verification token has been sent to your email. Use the following session ID: cmn34c04390c43cm4309",
-                };
-            },
-            confirmPay (args: any): CustomServerResponse
-            {
-                console.log("Datos recibidos para confirmar pago:", args);
-
-                // TODO: Aquí se debe implementar la lógica de negocio
-
-                return {
-                    success: true,
-                    code: 0,
-                    message: "Payment confirmed",
-                };
+            pay,
             },
         }
     }
